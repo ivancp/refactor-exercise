@@ -17,10 +17,16 @@ import java.util.logging.Logger;
  */
 public class JobFileHandler extends Loghandler{
 
-    public JobFileHandler(Map dbParams){
+    public JobFileHandler(Map dbParams) throws Exception{
         logger = Logger.getLogger("JobFileHandler");
         logger.setUseParentHandlers(false);
 
+        String folder = (String)dbParams.get("logFileFolder");
+        
+        if(folder == null){
+            throw new Exception("Invalid parameter: missing folder");
+        }
+                
         try{
             String l = null;
             File logFile = new File(dbParams.get("logFileFolder") + "/logFile.txt");

@@ -25,7 +25,6 @@ public class App
             
             Class.forName("com.mysql.jdbc.Driver").newInstance();
             
-            
             JobLogger logger =  new JobLogger( Loghandler.CONSOLE | Loghandler.FILE | Loghandler.DATABASE, params );        
             logger.LogMessage("Test",JobLevelMSG.ERROR);
             

@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 public class JobDatabaseHandler extends Loghandler{
     Connection connection = null;
     
-    public JobDatabaseHandler(Map dbParams){
+    public JobDatabaseHandler(Map dbParams) throws Exception{
         
         //we don't need log handler
         //logger = Logger.getLogger("JobDatabaseHandler");
@@ -38,13 +38,11 @@ public class JobDatabaseHandler extends Loghandler{
             
             String connectionString = "jdbc:" + dbParams.get("dbms") + "://" + dbParams.get("serverName")  
                      + ":" + dbParams.get("portNumber") + "/" + dbParams.get("dbName");
-            System.out.println(connectionString);
             
             connection = DriverManager.getConnection(connectionString , connectionProps);
             
         } catch (SQLException ex) {
-
-            System.out.println(ex.getMessage() + ex.getSQLState());
+            throw new Exception("Database exception");
         } 
 }
     

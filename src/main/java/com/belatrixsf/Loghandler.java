@@ -49,6 +49,9 @@ public class Loghandler {
             case JobLevelMSG.INFO:
                 message = "message " +DateFormat.getDateInstance(DateFormat.LONG).format(new Date()) + " " + messageText;
                 break;
+            default:
+                throw new Exception("Invalid level");
+                
         }
         logger.log(Level.INFO, message);
     }    
