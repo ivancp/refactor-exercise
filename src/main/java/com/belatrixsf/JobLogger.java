@@ -5,8 +5,12 @@
  */
 package com.belatrixsf;
 
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.Map;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -15,27 +19,30 @@ import java.util.Vector;
 public class JobLogger {
     
     private Vector<Loghandler> vHandler = new Vector<Loghandler>();
-    //private Loghandler;
     
-    public JobLogger(int handlers, Map dbParamsMap){
-
+    public JobLogger(int handlers, Map dbParamsMap) throws Exception{
+        
         if((handlers & Loghandler.CONSOLE) > 0 ){
-            ConsoleHandler handler = new ConsoleHandler(dbParamsMap);
+            JobConsoleHandler handler = new JobConsoleHandler(dbParamsMap);
             vHandler.add((Loghandler)handler);
         }
         if((handlers & Loghandler.DATABASE) > 0 ){
-            DatabaseHandler handler = new DatabaseHandler(dbParamsMap);
+            JobDatabaseHandler handler = new JobDatabaseHandler(dbParamsMap);
             vHandler.add((Loghandler)handler);
         }
         if((handlers & Loghandler.FILE) > 0 ){
-            FileHandler handler = new FileHandler(dbParamsMap);
+            JobFileHandler handler = new JobFileHandler(dbParamsMap);
             vHandler.add((Loghandler)handler);
+        }
+        
+        if(vHandler.size() == 0){
+            throw new Exception("Invalid parameters");
         }
     }
     
-    public void LogMessage(String message, int level){
-        for(int i = 0 ; i < vHandler.size();i++){
+    public void LogMessage(String message, int level) throws Exception{
+        for(int i = 0 ; i < vHandler.size(); i++){
             vHandler.get(i).LogMessage(message,level);
-        }
+        }        
     }
 }

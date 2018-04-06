@@ -5,18 +5,12 @@
  */
 package com.belatrixsf;
 
-import java.util.Map;
-
 /**
  *
  * @author ivancp
  */
-public class ConsoleHandler extends Loghandler{
-    public ConsoleHandler(Map params){
-    }
-    
-    @Override
-    public void LogMessage(String messageText, int level){
-        System.out.println("Console");
-    }
+public class JobLevelMSG {
+    public static final int WARNING = 0;
+    public static final int ERROR   = 1;
+    public static final int INFO    = 2;
 }

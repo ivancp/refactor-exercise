@@ -11,13 +11,26 @@ public class App
 {
     public static void main( String[] args )
     {
-        System.out.println( "Hello World!" );
-        
         Map<String,String> params = new HashMap<String,String>();
+        params.put("logFileFolder","/tmp");
         
+        params.put("userName","root");
+        params.put("password","w");
+        params.put("dbms","mysql");
+        params.put("dbName","belatrix");
+        params.put("serverName","localhost");
+        params.put("portNumber","3306");
         
-        JobLogger logger =  new JobLogger( Loghandler.CONSOLE | Loghandler.FILE, params );
-        
-        logger.LogMessage("message",Level.ERROR);
+        try{
+            
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
+            
+            
+            JobLogger logger =  new JobLogger( Loghandler.CONSOLE | Loghandler.FILE | Loghandler.DATABASE, params );        
+            logger.LogMessage("Test",JobLevelMSG.ERROR);
+            
+        }catch(Exception e){
+            System.out.println(e.toString());
+        }
     }
 }
