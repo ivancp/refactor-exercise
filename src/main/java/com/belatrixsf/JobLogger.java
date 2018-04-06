@@ -41,6 +41,11 @@ public class JobLogger {
     }
     
     public void LogMessage(String message, int level) throws Exception{
+        
+        if (!(level == JobLevelMSG.ERROR || level == JobLevelMSG.INFO || level == JobLevelMSG.WARNING)) {
+            throw new Exception("Error or Warning or Message must be specified");
+	}
+        
         for(int i = 0 ; i < vHandler.size(); i++){
             vHandler.get(i).LogMessage(message,level);
         }        

@@ -25,8 +25,19 @@ public class Loghandler {
     public Loghandler(){
         
     }
-    
+    boolean isempty(String messageText){
+        messageText.trim();
+        if (messageText == null || messageText.length() == 0) {
+                return true;
+        }
+        return false;
+    }
     public void LogMessage(String messageText, int level) throws Exception{
+
+        if(isempty(messageText)){
+            return;
+        }
+        
         String message = "";
         switch(level){
             case JobLevelMSG.WARNING:

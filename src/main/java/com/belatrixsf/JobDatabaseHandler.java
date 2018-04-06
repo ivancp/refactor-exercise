@@ -54,6 +54,11 @@ public class JobDatabaseHandler extends Loghandler{
         PreparedStatement stmt = null;
         String sql  = "insert into Log_Values (messageText, logLevel) "
                     + " values (?, ?)";
+
+        if(isempty(messageText)){
+            return;
+        }
+        
         try {
             connection.setAutoCommit(false);
             //stmt = connection.createStatement();
@@ -68,7 +73,7 @@ public class JobDatabaseHandler extends Loghandler{
             if(stmt != null){
                 stmt.close();
             }
-            connection.setAutoCommit(false);
+            connection.setAutoCommit(true);
         }
     }
 }
