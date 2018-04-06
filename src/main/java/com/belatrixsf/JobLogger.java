@@ -1,107 +1,41 @@
-import java.io.File;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
-import java.text.DateFormat;
-import java.util.Date;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.belatrixsf;
+
 import java.util.Map;
-import java.util.Properties;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Vector;
 
+/**
+ *
+ * @author ivancp
+ */
 public class JobLogger {
-	private static boolean logToFile;
-	private static boolean logToConsole;
-	private static boolean logMessage;
-	private static boolean logWarning;
-	private static boolean logError;
-	private static boolean logToDatabase;
-	private boolean initialized;
-	private static Map dbParams;
-	private static Logger logger;
+    
+    private Vector<Loghandler> vHandler = new Vector<Loghandler>();
+    //private Loghandler;
+    
+    public JobLogger(int handlers, Map dbParamsMap){
 
-	public JobLogger(boolean logToFileParam, boolean logToConsoleParam, boolean logToDatabaseParam,
-			boolean logMessageParam, boolean logWarningParam, boolean logErrorParam, Map dbParamsMap) {
-		logger = Logger.getLogger("MyLog");  
-		logError = logErrorParam;
-		logMessage = logMessageParam;
-		logWarning = logWarningParam;
-		logToDatabase = logToDatabaseParam;
-		logToFile = logToFileParam;
-		logToConsole = logToConsoleParam;
-		dbParams = dbParamsMap;
-	}
-
-	public static void LogMessage(String messageText, boolean message, boolean warning, boolean error) throws Exception {
-		messageText.trim();
-		if (messageText == null || messageText.length() == 0) {
-			return;
-		}
-		if (!logToConsole && !logToFile && !logToDatabase) {
-			throw new Exception("Invalid configuration");
-		}
-		if ((!logError && !logMessage && !logWarning) || (!message && !warning && !error)) {
-			throw new Exception("Error or Warning or Message must be specified");
-		}
-
-		Connection connection = null;
-		Properties connectionProps = new Properties();
-		connectionProps.put("user", dbParams.get("userName"));
-		connectionProps.put("password", dbParams.get("password"));
-
-		connection = DriverManager.getConnection("jdbc:" + dbParams.get("dbms") + "://" + dbParams.get("serverName")
-				+ ":" + dbParams.get("portNumber") + "/", connectionProps);
-
-		int t = 0;
-		if (message && logMessage) {
-			t = 1;
-		}
-
-		if (error && logError) {
-			t = 2;
-		}
-
-		if (warning && logWarning) {
-			t = 3;
-		}
-
-		Statement stmt = connection.createStatement();
-
-		String l = null;
-		File logFile = new File(dbParams.get("logFileFolder") + "/logFile.txt");
-		if (!logFile.exists()) {
-			logFile.createNewFile();
-		}
-		
-		FileHandler fh = new FileHandler(dbParams.get("logFileFolder") + "/logFile.txt");
-		ConsoleHandler ch = new ConsoleHandler();
-		
-		if (error && logError) {
-			l = l + "error " + DateFormat.getDateInstance(DateFormat.LONG).format(new Date()) + messageText;
-		}
-
-		if (warning && logWarning) {
-			l = l + "warning " +DateFormat.getDateInstance(DateFormat.LONG).format(new Date()) + messageText;
-		}
-
-		if (message && logMessage) {
-			l = l + "message " +DateFormat.getDateInstance(DateFormat.LONG).format(new Date()) + messageText;
-		}
-		
-		if(logToFile) {
-			logger.addHandler(fh);
-			logger.log(Level.INFO, messageText);
-		}
-		
-		if(logToConsole) {
-			logger.addHandler(ch);
-			logger.log(Level.INFO, messageText);
-		}
-		
-		if(logToDatabase) {
-			stmt.executeUpdate("insert into Log_Values('" + message + "', " + String.valueOf(t) + ")");
-		}
-	}
+        if((handlers & Loghandler.CONSOLE) > 0 ){
+            ConsoleHandler handler = new ConsoleHandler(dbParamsMap);
+            vHandler.add((Loghandler)handler);
+        }
+        if((handlers & Loghandler.DATABASE) > 0 ){
+            DatabaseHandler handler = new DatabaseHandler(dbParamsMap);
+            vHandler.add((Loghandler)handler);
+        }
+        if((handlers & Loghandler.FILE) > 0 ){
+            FileHandler handler = new FileHandler(dbParamsMap);
+            vHandler.add((Loghandler)handler);
+        }
+    }
+    
+    public void LogMessage(String message, int level){
+        for(int i = 0 ; i < vHandler.size();i++){
+            vHandler.get(i).LogMessage(message,level);
+        }
+    }
 }
